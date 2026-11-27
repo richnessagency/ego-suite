@@ -145,6 +145,12 @@ EOF
 chmod +x "$HOME/.local/share/applications/ego-suite.desktop"
 command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database "$HOME/.local/share/applications" >/dev/null 2>&1 || true
 
+# Install AI Agent Skill
+if [ -f "$SCRIPT_DIR/skills/ego-suite/SKILL.md" ]; then
+  mkdir -p "$HOME/.gemini/config/skills/ego-suite"
+  cp "$SCRIPT_DIR/skills/ego-suite/SKILL.md" "$HOME/.gemini/config/skills/ego-suite/SKILL.md"
+fi
+
 echo -e "${GREEN}================================================${NC}"
 echo -e "${GREEN} EGO Suite installed successfully!${NC}"
 echo -e " Run: ${YELLOW}./ego${NC} (or ${YELLOW}ego${NC}) to start on http://127.0.0.1:8787"

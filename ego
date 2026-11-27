@@ -32,6 +32,12 @@ if [ ! -x "$PYTHON_BIN" ]; then
   "$SCRIPT_DIR/ego-setup.sh"
 fi
 
+case "${1:-}" in
+  scan|report|tools|list)
+    exec "$PYTHON_BIN" -m ego_suite.cli "$@"
+    ;;
+esac
+
 if [ "${1:-}" = "--open" ]; then
   if ! curl -sf "$URL/api/health" >/dev/null 2>&1; then
     mkdir -p "$SCRIPT_DIR/data"

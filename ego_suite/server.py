@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 
 from .adapters import get_tools_status, install_tool
+from .cli import build_ai_report
 from .config import BASE_DIR, REPORTS_DIR
 from .db import delete_scan, get_dashboard_stats, get_scan_detail, init_db, list_scans, update_finding_status
 from .github_client import clear_github_token, get_github_status, list_user_repos, save_github_token
@@ -122,6 +123,14 @@ def scans_detail(scan_id: int) -> dict:
         raise HTTPException(status_code=404, detail="Scan not found")
     detail["progress"] = get_scan_progress(scan_id)
     return detail
+
+
+@app.get("/api/scans/{scan_id}/ai-report")
+def scans_ai_report(scan_id: int) -> dict:
+    report = build_ai_report(scan_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Scan not found")
+    return report
 
 
 @app.get("/api/scans/{scan_id}/report")
