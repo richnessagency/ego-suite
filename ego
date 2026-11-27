@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Resolve symlink to find portable EGO Suite directory
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+
+HOST="${EGO_HOST:-127.0.0.1}"
+PORT="${EGO_PORT:-8787}"
+URL="http://$HOST:$PORT"
+PYTHON_BIN="$SCRIPT_DIR/.venv/bin/python"
+
+cd "$SCRIPT_DIR"
+
+if [ "${1:-}" = "update" ]; then
+  echo "Updating EGO Suite from GitHub..."
+  git pull --ff-only origin main
+  if [ -x "$SCRIPT_DIR/.venv/bin/pip" ]; then
+    "$SCRIPT_DIR/.venv/bin/pip" install -r "$SCRIPT_DIR/requirements.txt" --quiet
+  fi
+  echo "EGO Suite updated! Restart the server if it is currently running."
+  exit 0
+fi
+
+if [ ! -x "$PYTHON_BIN" ]; then
+  echo "EGO Suite is not set up yet. Running ./ego-setup.sh..."
+  "$SCRIPT_DIR/ego-setup.sh"
+fi
+
+if [ "${1:-}" = "--open" ]; then
+  if ! curl -sf "$URL/api/health" >/dev/null 2>&1; then
+    mkdir -p "$SCRIPT_DIR/data"
+    nohup "$PYTHON_BIN" -m uvicorn ego_suite.server:app --host "$HOST" --port "$PORT" >"$SCRIPT_DIR/data/ego.log" 2>&1 &
+    for _ in $(seq 1 20); do
+      if curl -sf "$URL/api/health" >/dev/null 2>&1; then
+        break
+      fi
+      sleep 0.3
+    done
+  fi
+  if command -v xdg-open >/dev/null 2>&1; then
+    xdg-open "$URL" >/dev/null 2>&1 &
+  fi
+  exit 0
+fi
+
+echo "Starting EGO Suite on $URL ..."
+exec "$PYTHON_BIN" -m uvicorn ego_suite.server:app --host "$HOST" --port "$PORT"

@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>دليل أدوات الأمان المفتوحة المصدر — فحص المواقع والمشاريع</title>
+  <style>
+    :root {
+      --bg-page-light: #f4f6f9;
+      --bg-page-dark: #0b111a;
+      --bg-surface-light: #ffffff;
+      --bg-surface-dark: #131c2a;
+      --bg-elevated-light: #eef2f6;
+      --bg-elevated-dark: #1a2638;
+      --text-main-light: #111827;
+      --text-main-dark: #f1f5f9;
+      --text-muted-light: #4b5563;
+      --text-muted-dark: #94a3b8;
+      --border-light: #d1d5db;
+      --border-dark: #263549;
+      --brand-light: #0f62fe;
+      --brand-dark: #38bdf8;
+      --brand-contrast-light: #ffffff;
+      --brand-contrast-dark: #082f49;
+      --success-light: #15803d;
+      --success-dark: #4ade80;
+
+      --bg-page: var(--bg-page-light);
+      --bg-surface: var(--bg-surface-light);
+      --bg-elevated: var(--bg-elevated-light);
+      --text-main: var(--text-main-light);
+      --text-muted: var(--text-muted-light);
+      --border-color: var(--border-light);
+      --brand: var(--brand-light);
+      --brand-contrast: var(--brand-contrast-light);
+      --success: var(--success-light);
+
+      --scrollbar-track: #e5e7eb;
+      --scrollbar-thumb: #6b7280;
+
+      color-scheme: light dark;
+      accent-color: var(--brand);
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-page: var(--bg-page-dark);
+        --bg-surface: var(--bg-surface-dark);
+        --bg-elevated: var(--bg-elevated-dark);
+        --text-main: var(--text-main-dark);
+        --text-muted: var(--text-muted-dark);
+        --border-color: var(--border-dark);
+        --brand: var(--brand-dark);
+        --brand-contrast: var(--brand-contrast-dark);
+        --success: var(--success-dark);
+        --scrollbar-track: #131c2a;
+        --scrollbar-thumb: #475569;
+      }
+    }
+
+    @supports (color: light-dark(white, black)) {
+      :root {
+        --bg-page: light-dark(var(--bg-page-light), var(--bg-page-dark));
+        --bg-surface: light-dark(var(--bg-surface-light), var(--bg-surface-dark));
+        --bg-elevated: light-dark(var(--bg-elevated-light), var(--bg-elevated-dark));
+        --text-main: light-dark(var(--text-main-light), var(--text-main-dark));
+        --text-muted: light-dark(var(--text-muted-light), var(--text-muted-dark));
+        --border-color: light-dark(var(--border-light), var(--border-dark));
+        --brand: light-dark(var(--brand-light), var(--brand-dark));
+        --brand-contrast: light-dark(var(--brand-contrast-light), var(--brand-contrast-dark));
+        --success: light-dark(var(--success-light), var(--success-dark));
+        --scrollbar-track: light-dark(#e5e7eb, #131c2a);
+        --scrollbar-thumb: light-dark(#6b7280, #475569);
+      }
+    }
+
+    @supports not (scrollbar-color: auto) {
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--scrollbar-track);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: 5px;
+      }
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding-bottom: 6rem;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem;
+    }
+
+    header.page-header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      padding: 2rem 1.25rem 1.5rem;
+    }
+
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      margin: 0 0 1.25rem;
+      color: var(--text-muted);
+      max-width: 75ch;
+      font-size: 0.98rem;
+    }
+
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.88rem;
+    }
+
+    .stat-pill {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      color: var(--text-main);
+    }
+
+    /* Controls & Filters */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.1rem;
+    }
+
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1 1 280px;
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-page);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .search-input:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 1px;
+    }
+
+    .mode-select {
+      padding: 0.65rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-page);
+      color: var(--text-main);
+      font-size: 0.92rem;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .chip-btn {
+      border: 1px solid var(--border-color);
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      padding: 0.42rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .chip-btn:hover {
+      border-color: var(--brand);
+    }
+
+    .chip-btn[aria-pressed="true"] {
+      background: var(--brand);
+      color: var(--brand-contrast);
+      border-color: var(--brand);
+      font-weight: 600;
+    }
+
+    /* Cards Grid */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.15rem;
+    }
+
+    .tool-card {
+      container-type: inline-size;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .tool-card:has(.tool-select:checked) {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 1px var(--brand);
+    }
+
+    .tool-card > header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .tool-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .tool-title-wrap h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      line-height: 1.3;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.18rem 0.55rem;
+      border-radius: 6px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .badge.mode-url {
+      color: var(--brand);
+      border-color: var(--brand);
+    }
+
+    .badge.mode-local {
+      color: var(--success);
+      border-color: var(--success);
+    }
+
+    .select-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.3rem 0.55rem;
+      border-radius: 6px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .tool-select {
+      width: 1.05rem;
+      height: 1.05rem;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .tool-desc {
+      margin: 0;
+      font-size: 0.93rem;
+      color: var(--text-main);
+    }
+
+    .tool-meta {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.3rem 0.75rem;
+      margin: 0;
+      font-size: 0.84rem;
+      background: var(--bg-elevated);
+      padding: 0.7rem 0.85rem;
+      border-radius: 8px;
+    }
+
+    .tool-meta dt {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .tool-meta dd {
+      margin: 0;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .install-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      background: var(--bg-page);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      direction: ltr;
+    }
+
+    .install-box code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      white-space: nowrap;
+      color: var(--text-main);
+    }
+
+    .copy-btn {
+      flex-shrink: 0;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.76rem;
+      font-family: system-ui, sans-serif;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--brand);
+    }
+
+    .tool-card > footer {
+      margin-top: auto;
+      padding-top: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.84rem;
+    }
+
+    .repo-link {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .repo-link:hover {
+      text-decoration: underline;
+    }
+
+    .modifiable-tag {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    /* Sticky Bottom Action Bar */
+    .selection-bar {
+      position: fixed;
+      bottom: 0;
+      inset-inline: 0;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
+      padding: 0.85rem 1.25rem;
+      z-index: 20;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .selection-bar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .selection-count {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .bar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      border-color: var(--brand);
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: var(--brand-contrast);
+      border-color: var(--brand);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem 1rem;
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-color);
+      border-radius: 12px;
+      color: var(--text-muted);
+    }
+
+    .toast {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: var(--brand);
+      color: var(--brand-contrast);
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-inner">
+      <h1>دليل أدوات الأمان المفتوحة المصدر (DevSecOps &amp; AppSec)</h1>
+      <p class="subtitle">
+        مجموعة مختارة من الأدوات الآمنة ومفتوحة المصدر لفحص مواقعك الحية (عبر الرابط) أو مشاريعك المحلية (على جهازك)
+        لاكتشاف الثغرات وإصلاحها. حدّد الأدوات التي تناسبك ثم انسخ القائمة أو صدّرها لنبدأ دمجها في البرنامج الموحد.
+      </p>
+      <div class="stats-row">
+        <span class="stat-pill">إجمالي الأدوات: <strong id="totalCount">0</strong></span>
+        <span class="stat-pill">المعروض حالياً: <strong id="visibleCount">0</strong></span>
+        <span class="stat-pill">المحدد للتثبيت: <strong id="headerSelectedCount">0</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="controls" aria-label="أدوات البحث والتصفية">
+      <div class="search-row">
+        <input
+          type="search"
+          id="searchInput"
+          class="search-input"
+          placeholder="ابحث باسم الأداة، الوظيفة، اللغة (مثل Python, JS, SSL, Docker)..."
+          aria-label="ابحث في الأدوات"
+        >
+        <select id="modeFilter" class="mode-select" aria-label="تصفية حسب وضع التشغيل">
+          <option value="all">كل أوضاع الفحص (الروابط + المحلي)</option>
+          <option value="url">فحص الروابط الحية (URL / DAST)</option>
+          <option value="local">فحص المشاريع المحلية (Local Path)</option>
+        </select>
+      </div>
+
+      <div class="filter-chips" role="group" aria-label="تصفية حسب التصنيف">
+        <button type="button" class="chip-btn" data-category="all" aria-pressed="true">الكل</button>
+        <button type="button" class="chip-btn" data-category="DAST">DAST — فحص المواقع والروابط</button>
+        <button type="button" class="chip-btn" data-category="SAST">SAST — تحليل الكود المصدري</button>
+        <button type="button" class="chip-btn" data-category="SCA">SCA — فحص المكتبات والاعتماديات</button>
+        <button type="button" class="chip-btn" data-category="Secrets">Secrets — كشف الأسرار المسربة</button>
+        <button type="button" class="chip-btn" data-category="IaC">IaC — الحاويات والبنية التحتية</button>
+      </div>
+    </section>
+
+    <section id="toolsGrid" class="tools-grid" aria-label="قائمة الأدوات">
+      <!-- Cards rendered dynamically -->
+    </section>
+  </main>
+
+  <aside class="selection-bar" aria-label="ملخص الأدوات المختارة">
+    <div class="selection-bar-inner">
+      <div class="selection-count">
+        الأدوات المختارة: <span id="selectedCount">0</span>
+      </div>
+      <div class="bar-actions">
+        <button type="button" class="btn" id="selectVisibleBtn">تحديد المعروض</button>
+        <button type="button" class="btn" id="clearAllBtn">إلغاء التحديد</button>
+        <button type="button" class="btn" id="copyMdBtn">نسخ القائمة (Markdown)</button>
+        <button type="button" class="btn btn-primary" id="exportJsonBtn">تصدير الاختيارات (JSON)</button>
+      </div>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const TOOLS = [
+      // DAST - Live URL & Server Checks
+      {
+        id: "owasp-zap",
+        name: "OWASP ZAP (Zed Attack Proxy)",
+        category: "DAST",
+        mode: "url",
+        modeLabel: "رابط حي (URL)",
+        description: "الأداة القياسية من منظمة OWASP لفحص تطبيقات الويب. تكتشف ثغرات OWASP Top 10 مثل XSS، مشاكل الجلسات، ترويسات الأمان الناقصة، وإعدادات الخادم الخاطئة عبر الفحص النشط أو السلبي.",
+        whenToUse: "عندما تريد فحصاً شاملاً لموقعك الحي أو بيئة التجربة (Staging) قبل الإطلاق، خاصة إذا لم يكن الكود متاحاً محلياً.",
+        targets: "أي موقع أو API يعمل عبر HTTP/HTTPS",
+        license: "Apache 2.0",
+        writtenIn: "Java",
+        sarifSupport: "نعم (عبر الإضافات / Automation)",
+        installCmd: "docker pull ghcr.io/zaproxy/zaproxy:stable",
+        repoUrl: "https://github.com/zaproxy/zaproxy"
+      },
+      {
+        id: "nuclei",
+        name: "Nuclei",
+        category: "DAST",
+        mode: "url",
+        modeLabel: "رابط حي (URL)",
+        description: "ماسح ثغرات فائق السرعة يعتمد على قوالب YAML مفتوحة المصدر. ممتاز لاكتشاف الإعدادات الخاطئة، الملفات الحساسة المكشوفة (.env, .git)، والثغرات المعروفة (CVEs) مع إمكانية تقييده بالقوالب الآمنة فقط.",
+        whenToUse: "للفحص السريع والدوري لروابط مواقعك واكتشاف أي ملفات أو لوحات تحكم مكشوفة بالخطأ.",
+        targets: "URLs, APIs, DNS, HTTP Headers",
+        license: "MIT",
+        writtenIn: "Go",
+        sarifSupport: "نعم (-sarif-export)",
+        installCmd: "go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest",
+        repoUrl: "https://github.com/projectdiscovery/nuclei"
+      },
+      {
+        id: "testssl",
+        name: "testssl.sh",
+        category: "DAST",
+        mode: "url",
+        modeLabel: "رابط حي (URL)",
+        description: "أداة سطر أوامر خفيفة ودقيقة لفحص شهادات SSL/TLS، البروتوكولات القديمة الضعيفة (TLS 1.0/1.1)، وخوارزميات التشفير على أي دومين أو منفذ.",
+        whenToUse: "للتأكد من صحة شهادة HTTPS وإعدادات التشفير على السيرفر وعدم وجود ثغرات مثل Heartbleed أو Weak Ciphers.",
+        targets: "أي دومين أو IP يدعم TLS/SSL",
+        license: "GPLv2",
+        writtenIn: "Bash",
+        sarifSupport: "JSON / HTML",
+        installCmd: "git clone --depth 1 https://github.com/drwetter/testssl.sh.git",
+        repoUrl: "https://github.com/drwetter/testssl.sh"
+      },
+      {
+        id: "nikto",
+        name: "Nikto",
+        category: "DAST",
+        mode: "url",
+        modeLabel: "رابط حي (URL)",
+        description: "ماسح كلاسيكي لخوادم الويب (Apache, Nginx, IIS) يفحص وجود ملفات خطيرة، نسخ برامج قديمة، وإعدادات خادم غير آمنة.",
+        whenToUse: "عند فحص إعدادات السيرفر المستضيف للموقع والتأكد من إخفاء الملفات الافتراضية ومعلومات الإصدار.",
+        targets: "خوادم الويب HTTP/HTTPS",
+        license: "GPLv2",
+        writtenIn: "Perl",
+        sarifSupport: "JSON / CSV / HTML",
+        installCmd: "sudo apt install nikto",
+        repoUrl: "https://github.com/sullo/nikto"
+      },
+      {
+        id: "nmap",
+        name: "Nmap",
+        category: "DAST",
+        mode: "url",
+        modeLabel: "سيرفر / نطاق (Host)",
+        description: "الأداة الأشهر لفحص الشبكات والمنافذ المفتوحة والخدمات العاملة على السيرفر، مع سكربتات NSE لاكتشاف إعدادات الخدمات.",
+        whenToUse: "للتأكد من أن السيرفر لا يفتح منافذ غير ضرورية (مثل قواعد البيانات أو لوحات الإدارة) للعالم الخارجي.",
+        targets: "IP / Domain / Ports",
+        license: "NPSL (مفتوح المصدر)",
+        writtenIn: "C / C++ / Lua",
+        sarifSupport: "XML / JSON (عبر محول)",
+        installCmd: "sudo apt install nmap",
+        repoUrl: "https://github.com/nmap/nmap"
+      },
+      {
+        id: "wapiti",
+        name: "Wapiti",
+        category: "DAST",
+        mode: "url",
+        modeLabel: "رابط حي (URL)",
+        description: "فاحص تطبيقات ويب بلغة Python يعمل بطريقة الصندوق الأسود (Black-box) لاكتشاف ثغرات الحقن وXSS والملفات المكشوفة دون الحاجة للكود المصدري.",
+        whenToUse: "كبديل خفيف وسهل التعديل بـ Python عن ZAP لفحص الروابط والنماذج.",
+        targets: "تطبيقات الويب HTTP/HTTPS",
+        license: "GPLv2",
+        writtenIn: "Python",
+        sarifSupport: "JSON / HTML / XML",
+        installCmd: "pip install wapiti3",
+        repoUrl: "https://github.com/wapiti-scanner/wapiti"
+      },
+      {
+        id: "httpx-headers",
+        name: "httpx (فحص الترويسات والأمان)",
+        category: "DAST",
+        mode: "url",
+        modeLabel: "رابط حي (URL)",
+        description: "أداة سريعة من ProjectDiscovery لفحص استجابة الروابط، التوجيهات، ترويسات الأمان (CSP, HSTS, X-Frame-Options)، وبصمة التقنيات المستخدمة.",
+        whenToUse: "كخطوة أولى سريعة قبل الفحص العميق للتحقق من حالة الموقع وترويسات الحماية الأساسية.",
+        targets: "URLs / Subdomains",
+        license: "MIT",
+        writtenIn: "Go",
+        sarifSupport: "JSON",
+        installCmd: "go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest",
+        repoUrl: "https://github.com/projectdiscovery/httpx"
+      },
+
+      // SAST - Local Source Code Analysis
+      {
+        id: "semgrep",
+        name: "Semgrep",
+        category: "SAST",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "أداة تحليل كود ثابتة (SAST) سريعة جداً وتدعم أكثر من 30 لغة برمجة. تعتمد على قواعد سهلة الكتابة والقراءة بصيغة YAML لاكتشاف الثغرات والأنماط البرمجية الخطرة.",
+        whenToUse: "الركيزة الأساسية لفحص أي مشروع محلي مكتوب بـ JS/TS أو Python أو PHP أو Go لاكتشاف الثغرات قبل الرفع.",
+        targets: "JS/TS, Python, PHP, Go, Java, Ruby, C#",
+        license: "LGPL 2.1",
+        writtenIn: "OCaml / Python",
+        sarifSupport: "نعم (--sarif)",
+        installCmd: "pip install semgrep",
+        repoUrl: "https://github.com/semgrep/semgrep"
+      },
+      {
+        id: "bandit",
+        name: "Bandit",
+        category: "SAST",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "أداة متخصصة ومعتمدة في مجتمع Python لفحص الكود المصدري واكتشاف المشاكل الأمنية الشائعة (مثل استخدام eval، كلمات المرور الثابتة، أو استعلامات SQL غير الآمنة).",
+        whenToUse: "مع كل مشروع Python (Django, Flask, FastAPI) موجود على جهازك.",
+        targets: "Python",
+        license: "Apache 2.0",
+        writtenIn: "Python",
+        sarifSupport: "نعم (JSON / SARIF plugin)",
+        installCmd: "pip install bandit",
+        repoUrl: "https://github.com/PyCQA/bandit"
+      },
+      {
+        id: "eslint-security",
+        name: "ESLint Security Plugins",
+        category: "SAST",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "مجموعة إضافات أمان لـ ESLint (مثل eslint-plugin-security و eslint-plugin-no-unsanitized) لاكتشاف الثغرات في مشاريع Node.js وReact والواجهات الأمامية.",
+        whenToUse: "لفحص مشاريع JavaScript وTypeScript أثناء التطوير وقبل البناء.",
+        targets: "JavaScript / TypeScript / Node.js",
+        license: "MIT / Apache 2.0",
+        writtenIn: "JavaScript",
+        sarifSupport: "نعم (عبر @microsoft/eslint-formatter-sarif)",
+        installCmd: "npm install -D eslint eslint-plugin-security",
+        repoUrl: "https://github.com/eslint-community/eslint-plugin-security"
+      },
+      {
+        id: "bearer",
+        name: "Bearer CLI",
+        category: "SAST",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "أداة SAST مفتوحة المصدر تركز على تتبع تدفق البيانات الحساسة (Data Flow) داخل الكود واكتشاف مخاطر الخصوصية وتسريب البيانات في السجلات أو الطلبات.",
+        whenToUse: "عندما يتعامل مشروعك مع بيانات مستخدمين حساسة وتريد تتبع مسارها داخل الكود.",
+        targets: "JS/TS, Python, Ruby, Go, Java, PHP",
+        license: "Elastic License 2.0",
+        writtenIn: "Go",
+        sarifSupport: "نعم (-f sarif)",
+        installCmd: "curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh",
+        repoUrl: "https://github.com/Bearer/bearer"
+      },
+      {
+        id: "sonarqube-scanner",
+        name: "SonarScanner (SonarQube Community)",
+        category: "SAST",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "منصة متكاملة لتحليل جودة الكود والأمان محلياً عبر Docker، تمنحك لوحة تحكم وتاريخاً للمشاكل والـ Security Hotspots.",
+        whenToUse: "للمشاريع الكبيرة التي تحتاج متابعة طويلة المدى لجودة الكود والأمان معاً.",
+        targets: "أكثر من 25 لغة برمجة",
+        license: "LGPLv3",
+        writtenIn: "Java",
+        sarifSupport: "API / JSON",
+        installCmd: "docker run -d --name sonarqube -p 9000:9000 sonarqube:community",
+        repoUrl: "https://github.com/SonarSource/sonarqube"
+      },
+
+      // SCA - Dependency & Supply Chain
+      {
+        id: "trivy",
+        name: "Trivy",
+        category: "SCA",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "أداة شاملة وسريعة جداً من Aqua Security تفحص ثغرات المكتبات (package.json, requirements.txt, composer.json)، صور Docker، وملفات الإعدادات، مع دعم صيغة SARIF.",
+        whenToUse: "أداة أساسية في كل مشروع محلي لاكتشاف أي مكتبة خارجية تحتوي على ثغرة معروفة (CVE).",
+        targets: "Filesystem, Git Repos, Docker Images, IaC",
+        license: "Apache 2.0",
+        writtenIn: "Go",
+        sarifSupport: "نعم (--format sarif)",
+        installCmd: "sudo apt install trivy || docker pull aquasec/trivy",
+        repoUrl: "https://github.com/aquasecurity/trivy"
+      },
+      {
+        id: "osv-scanner",
+        name: "OSV-Scanner",
+        category: "SCA",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "أداة رسمية مفتوحة المصدر من Google تفحص ملفات الاعتماديات وتربطها مباشرة بقاعدة بيانات الثغرات المفتوحة OSV.dev بدقة عالية.",
+        whenToUse: "للتحقق السريع والدقيق من حزم المشاريع (npm, pip, Go, Cargo, Maven) ضد قاعدة بيانات Google.",
+        targets: "Lockfiles & Dependencies",
+        license: "Apache 2.0",
+        writtenIn: "Go",
+        sarifSupport: "نعم (--format sarif)",
+        installCmd: "go install github.com/google/osv-scanner/cmd/osv-scanner@latest",
+        repoUrl: "https://github.com/google/osv-scanner"
+      },
+      {
+        id: "retirejs",
+        name: "Retire.js",
+        category: "SCA",
+        mode: "both",
+        modeLabel: "الاثنين (URL + Local)",
+        description: "أداة متخصصة في اكتشاف مكتبات JavaScript القديمة ذات الثغرات المعروفة سواء داخل ملفات المشروع المحلي أو عبر فحص ملفات JS المحملة في الموقع الحي.",
+        whenToUse: "لمشاريع الويب التي تعتمد على مكتبات JS مثل jQuery أو مكتبات الواجهة الأمامية.",
+        targets: "مكتبات JavaScript (محلي أو ويب)",
+        license: "Apache 2.0",
+        writtenIn: "JavaScript / Node.js",
+        sarifSupport: "JSON",
+        installCmd: "npm install -g retire",
+        repoUrl: "https://github.com/RetireJS/retire.js"
+      },
+      {
+        id: "pip-npm-audit",
+        name: "pip-audit & npm audit",
+        category: "SCA",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "الأدوات الرسمية المدمجة لفحص حزم Python (pip-audit) وNode.js (npm audit) وإصدار تقارير بالثغرات وإمكانية الترقية الآمنة.",
+        whenToUse: "كفحص سريع وخفيف داخل بيئة التطوير لأي مشروع Python أو Node.js.",
+        targets: "Python / Node.js",
+        license: "Apache 2.0 / Artistic",
+        writtenIn: "Python / JS",
+        sarifSupport: "JSON",
+        installCmd: "pip install pip-audit",
+        repoUrl: "https://github.com/pypa/pip-audit"
+      },
+
+      // Secrets - Secret Scanning
+      {
+        id: "gitleaks",
+        name: "Gitleaks",
+        category: "Secrets",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "أداة فائقة السرعة لاكتشاف مفاتيح API، كلمات المرور، ومفاتيح SSH المسربة داخل ملفات المشروع أو في سجل Git بالكامل.",
+        whenToUse: "ضرورية قبل رفع أي كود إلى GitHub أو عند فحص مشروع محلي للتأكد من عدم وجود مفاتيح سرية مكشوفة.",
+        targets: "Git Repositories & Local Folders",
+        license: "MIT",
+        writtenIn: "Go",
+        sarifSupport: "نعم (--report-format sarif)",
+        installCmd: "docker pull zricethezav/gitleaks:latest",
+        repoUrl: "https://github.com/gitleaks/gitleaks"
+      },
+      {
+        id: "trufflehog",
+        name: "TruffleHog",
+        category: "Secrets",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "تبحث عن الأسرار والمفاتيح المسربة في الكود وتاريخ Git، وتتميز بقدرتها على التحقق مما إذا كان المفتاح المسرب لا يزال فعالاً أم لا.",
+        whenToUse: "عند الحاجة لتدقيق عميق لتاريخ Git والتأكد من خطورة المفاتيح المكتشفة.",
+        targets: "Git / Filesystem / S3 / Docker",
+        license: "AGPLv3",
+        writtenIn: "Go",
+        sarifSupport: "JSON",
+        installCmd: "docker pull trufflesecurity/trufflehog:latest",
+        repoUrl: "https://github.com/trufflesecurity/trufflehog"
+      },
+
+      // IaC & Containers
+      {
+        id: "checkov",
+        name: "Checkov",
+        category: "IaC",
+        mode: "local",
+        modeLabel: "مشروع محلي (Local)",
+        description: "أداة تحليل ثابتة لملفات البنية التحتية ككود (Terraform, Dockerfile, Kubernetes, GitHub Actions) لاكتشاف الإعدادات غير الآمنة قبل النشر.",
+        whenToUse: "إذا كان مشروعك يستخدم Docker أو ملفات نشر سحابية وتريد تأمين إعداداتها.",
+        targets: "Dockerfile, Terraform, K8s, CI/CD",
+        license: "Apache 2.0",
+        writtenIn: "Python",
+        sarifSupport: "نعم (-o sarif)",
+        installCmd: "pip install checkov",
+        repoUrl: "https://github.com/bridgecrewio/checkov"
+      }
+    ];
+
+    const STORAGE_KEY = "sec_tools_catalog_selection_v1";
+    let selectedIds = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+    let activeCategory = "all";
+    let activeMode = "all";
+    let searchQuery = "";
+
+    const gridEl = document.getElementById("toolsGrid");
+    const searchInput = document.getElementById("searchInput");
+    const modeFilter = document.getElementById("modeFilter");
+    const chipBtns = document.querySelectorAll(".chip-btn");
+    const totalCountEl = document.getElementById("totalCount");
+    const visibleCountEl = document.getElementById("visibleCount");
+    const selectedCountEl = document.getElementById("selectedCount");
+    const headerSelectedCountEl = document.getElementById("headerSelectedCount");
+    const toastEl = document.getElementById("toast");
+
+    totalCountEl.textContent = TOOLS.length;
+
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove("show"), 2200);
+    }
+
+    function saveSelection() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...selectedIds]));
+      selectedCountEl.textContent = selectedIds.size;
+      headerSelectedCountEl.textContent = selectedIds.size;
+    }
+
+    function getFilteredTools() {
+      const q = searchQuery.trim().toLowerCase();
+      return TOOLS.filter(tool => {
+        const matchCat = activeCategory === "all" || tool.category === activeCategory;
+        const matchMode = activeMode === "all" || tool.mode === activeMode || tool.mode === "both";
+        const matchQuery = !q || [
+          tool.name,
+          tool.description,
+          tool.whenToUse,
+          tool.targets,
+          tool.writtenIn,
+          tool.category,
+          tool.license
+        ].some(field => field.toLowerCase().includes(q));
+        return matchCat && matchMode && matchQuery;
+      });
+    }
+
+    function render() {
+      const filtered = getFilteredTools();
+      visibleCountEl.textContent = filtered.length;
+      saveSelection();
+
+      if (filtered.length === 0) {
+        gridEl.innerHTML = `<div class="empty-state">لا توجد أدوات تطابق معايير البحث الحالية. جرّب مسح نص البحث أو تغيير التصنيف.</div>`;
+        return;
+      }
+
+      gridEl.innerHTML = filtered.map(tool => {
+        const isChecked = selectedIds.has(tool.id) ? "checked" : "";
+        const modeClass = tool.mode === "url" ? "mode-url" : (tool.mode === "local" ? "mode-local" : "");
+        return `
+          <article class="tool-card">
+            <header>
+              <div class="tool-title-wrap">
+                <h2>${tool.name}</h2>
+                <div class="badges">
+                  <span class="badge">${tool.category}</span>
+                  <span class="badge ${modeClass}">${tool.modeLabel}</span>
+                  <span class="badge">${tool.license}</span>
+                </div>
+              </div>
+              <label class="select-label">
+                <input type="checkbox" class="tool-select" data-id="${tool.id}" ${isChecked}>
+                <span>اختيار</span>
+              </label>
+            </header>
+
+            <p class="tool-desc">${tool.description}</p>
+
+            <dl class="tool-meta">
+              <dt>متى تستخدمها:</dt>
+              <dd>${tool.whenToUse}</dd>
+              <dt>الهدف / اللغات:</dt>
+              <dd>${tool.targets}</dd>
+              <dt>لغة التطوير:</dt>
+              <dd>${tool.writtenIn}</dd>
+              <dt>صيغة التقرير:</dt>
+              <dd>${tool.sarifSupport}</dd>
+            </dl>
+
+            <div class="install-box">
+              <code>${tool.installCmd}</code>
+              <button type="button" class="copy-btn" data-cmd="${encodeURIComponent(tool.installCmd)}">نسخ</button>
+            </div>
+
+            <footer>
+              <a class="repo-link" href="${tool.repoUrl}" target="_blank" rel="noopener noreferrer">المستودع الرسمي (GitHub) ↗</a>
+              <span class="modifiable-tag">مفتوح المصدر وقابل للتعديل</span>
+            </footer>
+          </article>
+        `;
+      }).join("");
+    }
+
+    gridEl.addEventListener("change", (e) => {
+      if (e.target.classList.contains("tool-select")) {
+        const id = e.target.dataset.id;
+        if (e.target.checked) selectedIds.add(id);
+        else selectedIds.delete(id);
+        saveSelection();
+      }
+    });
+
+    gridEl.addEventListener("click", async (e) => {
+      const btn = e.target.closest(".copy-btn");
+      if (!btn) return;
+      const cmd = decodeURIComponent(btn.dataset.cmd);
+      try {
+        await navigator.clipboard.writeText(cmd);
+        showToast("تم نسخ أمر التثبيت");
+      } catch {
+        showToast("تعذر النسخ التلقائي");
+      }
+    });
+
+    searchInput.addEventListener("input", (e) => {
+      searchQuery = e.target.value;
+      render();
+    });
+
+    modeFilter.addEventListener("change", (e) => {
+      activeMode = e.target.value;
+      render();
+    });
+
+    chipBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        chipBtns.forEach(b => b.setAttribute("aria-pressed", "false"));
+        btn.setAttribute("aria-pressed", "true");
+        activeCategory = btn.dataset.category;
+        render();
+      });
+    });
+
+    document.getElementById("selectVisibleBtn").addEventListener("click", () => {
+      getFilteredTools().forEach(t => selectedIds.add(t.id));
+      render();
+      showToast("تم تحديد جميع الأدوات المعروضة");
+    });
+
+    document.getElementById("clearAllBtn").addEventListener("click", () => {
+      selectedIds.clear();
+      render();
+      showToast("تم إلغاء جميع الاختيارات");
+    });
+
+    document.getElementById("copyMdBtn").addEventListener("click", async () => {
+      const chosen = TOOLS.filter(t => selectedIds.has(t.id));
+      if (chosen.length === 0) {
+        showToast("اختر أداة واحدة على الأقل أولاً");
+        return;
+      }
+      const md = [
+        "### الأدوات الأمنية المختارة:",
+        ...chosen.map(t => `- **${t.name}** (${t.category} | ${t.modeLabel}) — \`${t.installCmd}\``)
+      ].join("\n");
+      try {
+        await navigator.clipboard.writeText(md);
+        showToast("تم نسخ القائمة بصيغة Markdown");
+      } catch {
+        showToast("تعذر النسخ إلى الحافظة");
+      }
+    });
+
+    document.getElementById("exportJsonBtn").addEventListener("click", () => {
+      const chosen = TOOLS.filter(t => selectedIds.has(t.id));
+      if (chosen.length === 0) {
+        showToast("اختر أداة واحدة على الأقل للتصدير");
+        return;
+      }
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        count: chosen.length,
+        tools: chosen.map(({ id, name, category, mode, installCmd, repoUrl }) => ({
+          id, name, category, mode, installCmd, repoUrl
+        }))
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "selected-tools.json";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("تم تنزيل ملف selected-tools.json");
+    });
+
+    render();
+  </script>
+</body>
+</html>
+

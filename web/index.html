@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>EGO Suite — منصة الفحص الأمني الموحدة</title>
+  <link rel="icon" type="image/png" href="/EGOicon.png">
+  <style>
+    :root {
+      --bg-black: #09090b;
+      --bg-surface: #121216;
+      --bg-elevated: #18181d;
+      --border: #27272f;
+      --yellow: #facc15;
+      --yellow-hover: #eab308;
+      --yellow-dim: rgba(250, 204, 21, 0.14);
+      --text-main: #fafafa;
+      --text-muted: #a1a1aa;
+      --critical: #ef4444;
+      --high: #f97316;
+      --low: #38bdf8;
+      --fixed: #22c55e;
+
+      color-scheme: dark;
+      accent-color: var(--yellow);
+      scrollbar-color: #3f3f46 var(--bg-surface);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      background: var(--bg-black);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* Top Bar */
+    .topbar {
+      background: var(--bg-surface);
+      border-bottom: 2px solid var(--yellow);
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--yellow);
+      background: var(--bg-black);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .brand-sub {
+      font-size: 0.78rem;
+      color: var(--yellow);
+    }
+
+    .nav-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .tab-btn {
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--yellow);
+      color: var(--text-main);
+    }
+
+    .tab-btn[aria-selected="true"] {
+      background: var(--yellow);
+      color: var(--bg-black);
+      border-color: var(--yellow);
+      font-weight: 800;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    h2.section-title {
+      margin: 0 0 1rem;
+      font-size: 1.25rem;
+      color: var(--yellow);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Stats Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--yellow);
+      border-radius: 10px;
+      padding: 1rem 1.15rem;
+    }
+
+    .kpi-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .kpi-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--yellow);
+      margin-top: 0.25rem;
+    }
+
+    /* Forms & Inputs */
+    .card-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.35rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    label.field-label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    input[type="text"], input[type="url"], select {
+      background: var(--bg-black);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.93rem;
+    }
+
+    input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--yellow);
+      outline-offset: 1px;
+    }
+
+    .btn {
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn:hover { border-color: var(--yellow); }
+
+    .btn-yellow {
+      background: var(--yellow);
+      color: var(--bg-black);
+      border-color: var(--yellow);
+    }
+
+    .btn-yellow:hover { background: var(--yellow-hover); }
+
+    /* Tools Grid */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .tool-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .tool-item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pill {
+      font-size: 0.75rem;
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+    }
+
+    .pill.ok { color: var(--fixed); border-color: var(--fixed); }
+    .pill.missing { color: var(--yellow); border-color: var(--yellow); }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      padding: 0.75rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      text-align: right;
+    }
+
+    th {
+      background: var(--bg-elevated);
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    .sev-badge {
+      padding: 0.18rem 0.5rem;
+      border-radius: 5px;
+      font-weight: 800;
+      font-size: 0.76rem;
+      display: inline-block;
+    }
+    .sev-Critical { background: var(--critical); color: #fff; }
+    .sev-High { background: var(--high); color: var(--bg-black); }
+    .sev-Medium { background: var(--yellow); color: var(--bg-black); }
+    .sev-Low { background: var(--low); color: var(--bg-black); }
+    .sev-Info { background: #3f3f46; color: #fff; }
+
+    .tools-checklist {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.75rem 0 1.25rem;
+    }
+
+    .tool-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.7rem;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      cursor: pointer;
+    }
+
+    .tool-chip:has(input:checked) {
+      border-color: var(--yellow);
+      background: var(--yellow-dim);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 1.25rem;
+      background: var(--yellow);
+      color: var(--bg-black);
+      padding: 0.65rem 1.1rem;
+      border-radius: 8px;
+      font-weight: 800;
+      z-index: 60;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="/EGOicon.png" alt="EGO Suite Logo" class="brand-logo" width="42" height="42">
+      <div>
+        <div class="brand-title">EGO Suite</div>
+        <div class="brand-sub">Unified AppSec &amp; Vulnerability Orchestrator</div>
+      </div>
+    </div>
+
+    <nav class="nav-tabs" role="tablist" aria-label="أقسام البرنامج">
+      <button type="button" class="tab-btn" role="tab" data-tab="dashboard" aria-selected="true">لوحة القيادة</button>
+      <button type="button" class="tab-btn" role="tab" data-tab="newscan" aria-selected="false">فحص جديد</button>
+      <button type="button" class="tab-btn" role="tab" data-tab="tools" aria-selected="false">إدارة الأدوات</button>
+      <button type="button" class="tab-btn" role="tab" data-tab="reports" aria-selected="false">التقارير وإعادة الاختبار</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Dashboard -->
+    <section id="panel-dashboard" class="panel active">
+      <h2 class="section-title">مركز القيادة (Command Center)</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">إجمالي المشاريع</div>
+          <div class="kpi-value" id="kpiProjects">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">عمليات الفحص المنفذة</div>
+          <div class="kpi-value" id="kpiScans">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">الأدوات الجاهزة محلياً</div>
+          <div class="kpi-value" id="kpiToolsReady">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">ثغرات تم حلها (آخر فحص)</div>
+          <div class="kpi-value" id="kpiFixed">0</div>
+        </div>
+      </div>
+
+      <div class="card-box">
+        <h3 style="margin-top:0;color:var(--yellow)">آخر الفحوصات</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>المشروع</th>
+                <th>الوضع</th>
+                <th>الحالة</th>
+                <th>النتائج</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="recentScansBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- New Scan -->
+    <section id="panel-newscan" class="panel">
+      <h2 class="section-title">تشغيل فحص أمني جديد</h2>
+
+      <div class="card-box" id="githubBox">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.75rem">
+          <div>
+            <strong style="color:var(--yellow)">ربط حساب GitHub</strong>
+            <span id="ghStatusText" style="font-size:0.85rem;color:var(--text-muted);margin-inline-start:0.5rem">غير متصل</span>
+          </div>
+          <div id="ghConnectControls" style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+            <input type="password" id="ghTokenInput" placeholder="GitHub Personal Access Token (repo scope)" style="min-width:280px;background:var(--bg-black);color:var(--text-main);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.75rem">
+            <button type="button" class="btn btn-yellow" id="ghConnectBtn">ربط الحساب</button>
+          </div>
+          <div id="ghDisconnectControls" style="display:none;gap:0.5rem;align-items:center">
+            <button type="button" class="btn" id="ghRefreshReposBtn">تحديث المستودعات</button>
+            <button type="button" class="btn" id="ghDisconnectBtn" style="border-color:var(--critical);color:var(--critical)">فصل الحساب</button>
+          </div>
+        </div>
+      </div>
+
+      <form id="scanForm" class="card-box">
+        <div class="form-grid">
+          <label class="field-label">
+            اسم المشروع
+            <input type="text" id="projectName" required placeholder="مثال: My Web App">
+          </label>
+          <label class="field-label">
+            رابط الموقع الحي (URL — اختياري)
+            <input type="url" id="targetUrl" placeholder="https://example.com">
+          </label>
+          <label class="field-label">
+            مسار المشروع على الجهاز (Local Path — اختياري)
+            <input type="text" id="localPath" placeholder="/home/omar/Working/...">
+          </label>
+          <label class="field-label">
+            مستودع GitHub (اختياري — يجلب الملفات تلقائياً)
+            <select id="githubRepoSelect">
+              <option value="">-- اختر مستودعاً من GitHub --</option>
+            </select>
+          </label>
+        </div>
+
+        <div style="font-weight:700;font-size:0.9rem;color:var(--yellow)">الأدوات المتاحة والمحددة للفحص (اتركها كما هي للاختيار التلقائي حسب الوضع):</div>
+        <div id="scanToolsList" class="tools-checklist"></div>
+
+        <button type="submit" class="btn btn-yellow">بدء الفحص الآن</button>
+      </form>
+    </section>
+
+    <!-- Tools Manager -->
+    <section id="panel-tools" class="panel">
+      <h2 class="section-title">إدارة الأدوات المفتوحة المصدر (19 أداة + الفاحص المدمج)</h2>
+      <div id="toolsGrid" class="tools-grid"></div>
+    </section>
+
+    <!-- Reports & Re-test -->
+    <section id="panel-reports" class="panel">
+      <h2 class="section-title">التقرير المجمع وإعادة الاختبار (Re-test)</h2>
+      <div id="reportHeaderBox" class="card-box" style="display:none">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem">
+          <div>
+            <strong id="repTitle" style="font-size:1.1rem;color:var(--yellow)"></strong>
+            <div id="repMeta" style="color:var(--text-muted);font-size:0.88rem;margin-top:0.25rem"></div>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <button type="button" class="btn btn-yellow" id="retestBtn">إعادة الاختبار (Re-test)</button>
+            <a class="btn" id="dlHtmlBtn" target="_blank">تنزيل HTML</a>
+            <a class="btn" id="dlMdBtn" target="_blank">تنزيل Markdown</a>
+            <button type="button" class="btn" id="deleteReportBtn" style="border-color:var(--critical);color:var(--critical)">حذف التقرير</button>
+          </div>
+        </div>
+        <div id="repProgressWrap" style="display:none;margin-top:0.9rem;padding:0.85rem;background:var(--bg-black);border:1px solid var(--yellow);border-radius:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.86rem;margin-bottom:0.45rem">
+            <strong id="repProgressStep" style="color:var(--yellow)">جاري بدء الفحص...</strong>
+            <span id="repProgressEta" style="color:var(--text-muted)">الوقت المتبقي: جاري الحساب...</span>
+          </div>
+          <progress id="repProgressBar" max="100" value="5" style="width:100%;height:12px;border-radius:6px"></progress>
+        </div>
+        <div id="repToolsLog" style="margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:0.45rem;font-size:0.78rem"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>الخطورة</th>
+              <th>المشكلة</th>
+              <th>الأداة</th>
+              <th>الموقع</th>
+              <th>الحالة</th>
+            </tr>
+          </thead>
+          <tbody id="findingsBody">
+            <tr><td colspan="5" style="text-align:center;color:var(--text-muted)">اختر فحصاً من لوحة القيادة لعرض تقريره التفصيلي.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    let allTools = [];
+    let currentScanDetail = null;
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => t.classList.remove("show"), 2600);
+    }
+
+    let activeTab = "dashboard";
+    let pollTimer = null;
+    let dashTimer = null;
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+      if (tabName !== "reports") {
+        clearTimeout(pollTimer);
+      }
+      document.querySelectorAll(".tab-btn").forEach(b => {
+        b.setAttribute("aria-selected", b.dataset.tab === tabName ? "true" : "false");
+      });
+      document.querySelectorAll(".panel").forEach(p => {
+        p.classList.toggle("active", p.id === `panel-${tabName}`);
+      });
+    }
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+
+    async function loadTools() {
+      const res = await fetch("/api/tools");
+      const data = await res.json();
+      allTools = data.tools || [];
+      const readyCount = allTools.filter(t => t.installed).length;
+      document.getElementById("kpiToolsReady").textContent = `${readyCount} / ${allTools.length}`;
+
+      document.getElementById("toolsGrid").innerHTML = allTools.map(t => `
+        <article class="tool-item">
+          <div class="tool-item-head">
+            <strong>${escapeHtml(t.name)}</strong>
+            <span class="pill ${t.installed ? "ok" : "missing"}">${t.installed ? "مثبت" : "غير مثبت"}</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">
+            التصنيف: ${escapeHtml(t.category)} | الوضع: ${escapeHtml(t.mode)}
+          </div>
+          <div style="font-size:0.8rem;color:var(--text-muted);word-break:break-all">
+            المسار: <code>${escapeHtml(t.runtime)}</code>
+          </div>
+          ${!t.installed ? `<button type="button" class="btn" onclick="installSingleTool('${escapeHtml(t.id)}')">تثبيت الآن</button>` : ""}
+        </article>
+      `).join("");
+
+      document.getElementById("scanToolsList").innerHTML = allTools
+        .filter(t => t.installed)
+        .map(t => `
+          <label class="tool-chip">
+            <input type="checkbox" name="scanTool" value="${escapeHtml(t.id)}" checked>
+            <span>${escapeHtml(t.name)} (${escapeHtml(t.mode)})</span>
+          </label>
+        `).join("");
+    }
+
+    async function installSingleTool(id) {
+      showToast(`جاري تثبيت ${id}...`);
+      const res = await fetch(`/api/tools/${encodeURIComponent(id)}/install`, { method: "POST" });
+      const data = await res.json();
+      showToast(data.ok ? `تم تثبيت ${id} بنجاح` : `تعذر التثبيت التلقائي لـ ${id}`);
+      await loadTools();
+    }
+
+    async function loadDashboard() {
+      const [statsRes, scansRes] = await Promise.all([fetch("/api/stats"), fetch("/api/scans")]);
+      const stats = await statsRes.json();
+      const scansData = await scansRes.json();
+      const scans = scansData.scans || [];
+
+      document.getElementById("kpiProjects").textContent = stats.projects ?? 0;
+      document.getElementById("kpiScans").textContent = stats.scans ?? 0;
+      try {
+        const latest = JSON.parse(stats.latest_summary || "{}");
+        document.getElementById("kpiFixed").textContent = latest.fixed ?? 0;
+      } catch {
+        document.getElementById("kpiFixed").textContent = 0;
+      }
+
+      let hasRunning = false;
+      document.getElementById("recentScansBody").innerHTML = scans.length
+        ? scans.map(s => {
+            if (s.status === "running") hasRunning = true;
+            let sum = {};
+            try { sum = JSON.parse(s.summary_json || "{}"); } catch {}
+            const totalText = s.status === "running" ? "جاري الفحص..." : (sum.total ?? 0);
+            const statusText = s.status === "running" ? "قيد التشغيل" : (s.status === "completed" ? "مكتمل" : s.status);
+            return `
+            <tr>
+              <td>#${s.id}</td>
+              <td>${escapeHtml(s.project_name)}</td>
+              <td>${escapeHtml(s.mode)}</td>
+              <td>${escapeHtml(statusText)}</td>
+              <td><strong>${escapeHtml(totalText)}</strong></td>
+              <td><button type="button" class="btn" onclick="openReport(${s.id})">عرض التقرير</button> <button type="button" class="btn" style="border-color:var(--critical);color:var(--critical)" onclick="deleteScan(${s.id})">حذف</button></td>
+            </tr>
+          `;
+          }).join("")
+        : `<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">لا توجد فحوصات بعد. ابدأ فحصك الأول من تبويب "فحص جديد".</td></tr>`;
+      clearTimeout(dashTimer);
+      if (hasRunning) {
+        dashTimer = setTimeout(loadDashboard, 3000);
+      }
+    }
+
+    async function deleteScan(scanId) {
+      const res = await fetch(`/api/scans/${scanId}`, { method: "DELETE" });
+      if (!res.ok) {
+        showToast("تعذر حذف التقرير");
+        return;
+      }
+      showToast(`تم حذف التقرير #${scanId}`);
+      if (currentScanDetail && currentScanDetail.scan && currentScanDetail.scan.id === scanId) {
+        currentScanDetail = null;
+        document.getElementById("reportHeaderBox").style.display = "none";
+        document.getElementById("findingsBody").innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">اختر فحصاً من لوحة القيادة لعرض تقريره التفصيلي.</td></tr>`;
+      }
+      loadDashboard();
+    }
+
+    document.getElementById("deleteReportBtn").addEventListener("click", () => {
+      if (currentScanDetail && currentScanDetail.scan) {
+        deleteScan(currentScanDetail.scan.id);
+      }
+    });
+
+    async function openReport(scanId, shouldSwitch = true) {
+      clearTimeout(pollTimer);
+      if (shouldSwitch) {
+        switchTab("reports");
+      }
+      const res = await fetch(`/api/scans/${scanId}`);
+      if (!res.ok) return;
+      currentScanDetail = await res.json();
+      const s = currentScanDetail.scan;
+      const findings = currentScanDetail.findings || [];
+      let sum = {};
+      try { sum = JSON.parse(s.summary_json || "{}"); } catch {}
+
+      document.getElementById("reportHeaderBox").style.display = "block";
+      document.getElementById("repTitle").textContent = `تقرير #${s.id} — ${s.project_name}`;
+      document.getElementById("repMeta").textContent =
+        `الوضع: ${s.mode} | الحالة: ${s.status} | النتائج: ${findings.length} | جديدة: ${sum.new ?? 0} | تم حلها: ${sum.fixed ?? 0}`;
+      document.getElementById("dlHtmlBtn").href = `/api/scans/${s.id}/report?fmt=html`;
+      document.getElementById("dlMdBtn").href = `/api/scans/${s.id}/report?fmt=md`;
+
+      const progWrap = document.getElementById("repProgressWrap");
+      const progBar = document.getElementById("repProgressBar");
+      const progStep = document.getElementById("repProgressStep");
+      const progEta = document.getElementById("repProgressEta");
+      const prog = currentScanDetail.progress;
+
+      if (s.status === "running") {
+        progWrap.style.display = "block";
+        if (prog) {
+          progBar.value = prog.percent;
+          progStep.textContent = `جاري تشغيل: ${prog.current_tool} (${prog.completed_steps} من ${prog.total_steps} — ${prog.percent}%)`;
+          progEta.textContent = `المنقضي: ${prog.elapsed_seconds}ث | المتبقي تقريباً: ~${prog.eta_seconds}ث`;
+        } else {
+          progBar.value = 5;
+          progStep.textContent = "جاري تهيئة الفحص...";
+          progEta.textContent = "الوقت المتبقي: جاري الحساب...";
+        }
+      } else {
+        progWrap.style.display = "none";
+      }
+
+      const toolsMap = (prog && prog.tools && Object.keys(prog.tools).length) ? prog.tools : (sum.tools || {});
+      const toolsEntries = Object.entries(toolsMap);
+      document.getElementById("repToolsLog").innerHTML = toolsEntries.length
+        ? toolsEntries.map(([k, v]) => `<span class="pill">${escapeHtml(k)}: ${escapeHtml(v)}</span>`).join("")
+        : `<span style="color:var(--text-muted)">جاري تنفيذ الأدوات...</span>`;
+
+      if (s.status === "running") {
+        document.getElementById("findingsBody").innerHTML =
+          `<tr><td colspan="5" style="text-align:center;color:var(--yellow)">جاري تشغيل الفحص الآن... سيتم تحديث التقرير تلقائياً فور الانتهاء.</td></tr>`;
+        if (activeTab === "reports") {
+          pollTimer = setTimeout(() => { openReport(scanId, false); loadDashboard(); }, 1200);
+        }
+        return;
+      }
+
+      document.getElementById("findingsBody").innerHTML = findings.length
+        ? findings.map(f => `
+            <tr>
+              <td><span class="sev-badge sev-${escapeHtml(f.severity)}">${escapeHtml(f.severity)}</span></td>
+              <td>
+                <strong>${escapeHtml(f.title)}</strong>
+                <div style="font-size:0.8rem;color:var(--text-muted)">${escapeHtml(f.description)}</div>
+              </td>
+              <td>${escapeHtml(f.source_tool)}</td>
+              <td><code>${escapeHtml(f.location)}</code></td>
+              <td>
+                <select onchange="updateFindingStatus(${f.id}, this.value)">
+                  ${["Open", "In Progress", "Fixed", "False Positive", "New"].map(st =>
+                    `<option value="${st}" ${f.status === st ? "selected" : ""}>${st}</option>`
+                  ).join("")}
+                </select>
+              </td>
+            </tr>
+          `).join("")
+        : `<tr><td colspan="5" style="text-align:center;color:var(--fixed)">ممتاز! اكتمل الفحص ولم يتم رصد أي مشاكل.</td></tr>`;
+    }
+
+    async function updateFindingStatus(findingId, status) {
+      await fetch(`/api/findings/${findingId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      showToast("تم تحديث حالة الثغرة");
+    }
+
+    document.getElementById("retestBtn").addEventListener("click", async () => {
+      if (!currentScanDetail) return;
+      const s = currentScanDetail.scan;
+      const res = await fetch("/api/scans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          project_name: s.project_name,
+          target_url: s.target_url,
+          local_path: s.local_path
+        })
+      });
+      const data = await res.json();
+      showToast(`تم بدء إعادة الاختبار (#${data.scan_id})`);
+      setTimeout(() => { loadDashboard(); openReport(data.scan_id); }, 2500);
+    });
+
+    document.getElementById("scanForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const project_name = document.getElementById("projectName").value.trim();
+      const target_url = document.getElementById("targetUrl").value.trim();
+      const local_path = document.getElementById("localPath").value.trim();
+      const github_repo = document.getElementById("githubRepoSelect").value.trim();
+      if (!target_url && !local_path && !github_repo) {
+        showToast("أدخل رابط الموقع أو المسار المحلي أو اختر مستودع GitHub");
+        return;
+      }
+      const checkedTools = [...document.querySelectorAll('input[name="scanTool"]:checked')].map(el => el.value);
+      const res = await fetch("/api/scans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ project_name, target_url, local_path, github_repo, tools: checkedTools.length ? checkedTools : null })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.detail || "حدث خطأ أثناء بدء الفحص");
+        return;
+      }
+      showToast(`بدأ الفحص #${data.scan_id} بنجاح`);
+      switchTab("dashboard");
+      setTimeout(() => { loadDashboard(); openReport(data.scan_id); }, 2500);
+    });
+
+    async function loadGitHub() {
+      const res = await fetch("/api/github/status");
+      const st = await res.json();
+      const statusEl = document.getElementById("ghStatusText");
+      const connCtrl = document.getElementById("ghConnectControls");
+      const discCtrl = document.getElementById("ghDisconnectControls");
+      const sel = document.getElementById("githubRepoSelect");
+
+      if (st.connected) {
+        statusEl.textContent = `متصل بـ @${st.username}`;
+        statusEl.style.color = "var(--fixed)";
+        connCtrl.style.display = "none";
+        discCtrl.style.display = "flex";
+        const rRes = await fetch("/api/github/repos");
+        if (rRes.ok) {
+          const rData = await rRes.json();
+          sel.innerHTML = `<option value="">-- اختر مستودعاً من GitHub --</option>` +
+            (rData.repos || []).map(r => `<option value="${escapeHtml(r.full_name)}">${escapeHtml(r.full_name)} (${r.private ? "خاص" : "عام"} | ${escapeHtml(r.language)})</option>`).join("");
+        }
+      } else {
+        statusEl.textContent = "غير متصل";
+        statusEl.style.color = "var(--text-muted)";
+        connCtrl.style.display = "flex";
+        discCtrl.style.display = "none";
+        sel.innerHTML = `<option value="">-- اربط حساب GitHub أولاً --</option>`;
+      }
+    }
+
+    document.getElementById("ghConnectBtn").addEventListener("click", async () => {
+      const token = document.getElementById("ghTokenInput").value.trim();
+      if (!token) { showToast("أدخل GitHub Token أولاً"); return; }
+      const res = await fetch("/api/github/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      });
+      const data = await res.json();
+      if (!res.ok) { showToast(data.detail || "فشل ربط GitHub"); return; }
+      document.getElementById("ghTokenInput").value = "";
+      showToast(`تم الربط بـ @${data.username}`);
+      loadGitHub();
+    });
+
+    document.getElementById("ghDisconnectBtn").addEventListener("click", async () => {
+      await fetch("/api/github/config", { method: "DELETE" });
+      showToast("تم فصل حساب GitHub");
+      loadGitHub();
+    });
+
+    document.getElementById("ghRefreshReposBtn").addEventListener("click", loadGitHub);
+
+    loadTools();
+    loadDashboard();
+    loadGitHub();
+  </script>
+</body>
+</html>
+

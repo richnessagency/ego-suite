@@ -1,0 +1,158 @@
+{
+  "exportedAt": "2026-11-26T19:33:02.146Z",
+  "count": 19,
+  "tools": [
+    {
+      "id": "owasp-zap",
+      "name": "OWASP ZAP (Zed Attack Proxy)",
+      "category": "DAST",
+      "mode": "url",
+      "installCmd": "docker pull ghcr.io/zaproxy/zaproxy:stable",
+      "repoUrl": "https://github.com/zaproxy/zaproxy"
+    },
+    {
+      "id": "nuclei",
+      "name": "Nuclei",
+      "category": "DAST",
+      "mode": "url",
+      "installCmd": "go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest",
+      "repoUrl": "https://github.com/projectdiscovery/nuclei"
+    },
+    {
+      "id": "testssl",
+      "name": "testssl.sh",
+      "category": "DAST",
+      "mode": "url",
+      "installCmd": "git clone --depth 1 https://github.com/drwetter/testssl.sh.git",
+      "repoUrl": "https://github.com/drwetter/testssl.sh"
+    },
+    {
+      "id": "nikto",
+      "name": "Nikto",
+      "category": "DAST",
+      "mode": "url",
+      "installCmd": "sudo apt install nikto",
+      "repoUrl": "https://github.com/sullo/nikto"
+    },
+    {
+      "id": "nmap",
+      "name": "Nmap",
+      "category": "DAST",
+      "mode": "url",
+      "installCmd": "sudo apt install nmap",
+      "repoUrl": "https://github.com/nmap/nmap"
+    },
+    {
+      "id": "wapiti",
+      "name": "Wapiti",
+      "category": "DAST",
+      "mode": "url",
+      "installCmd": "pip install wapiti3",
+      "repoUrl": "https://github.com/wapiti-scanner/wapiti"
+    },
+    {
+      "id": "httpx-headers",
+      "name": "httpx (فحص الترويسات والأمان)",
+      "category": "DAST",
+      "mode": "url",
+      "installCmd": "go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest",
+      "repoUrl": "https://github.com/projectdiscovery/httpx"
+    },
+    {
+      "id": "semgrep",
+      "name": "Semgrep",
+      "category": "SAST",
+      "mode": "local",
+      "installCmd": "pip install semgrep",
+      "repoUrl": "https://github.com/semgrep/semgrep"
+    },
+    {
+      "id": "bandit",
+      "name": "Bandit",
+      "category": "SAST",
+      "mode": "local",
+      "installCmd": "pip install bandit",
+      "repoUrl": "https://github.com/PyCQA/bandit"
+    },
+    {
+      "id": "eslint-security",
+      "name": "ESLint Security Plugins",
+      "category": "SAST",
+      "mode": "local",
+      "installCmd": "npm install -D eslint eslint-plugin-security",
+      "repoUrl": "https://github.com/eslint-community/eslint-plugin-security"
+    },
+    {
+      "id": "bearer",
+      "name": "Bearer CLI",
+      "category": "SAST",
+      "mode": "local",
+      "installCmd": "curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh",
+      "repoUrl": "https://github.com/Bearer/bearer"
+    },
+    {
+      "id": "sonarqube-scanner",
+      "name": "SonarScanner (SonarQube Community)",
+      "category": "SAST",
+      "mode": "local",
+      "installCmd": "docker run -d --name sonarqube -p 9000:9000 sonarqube:community",
+      "repoUrl": "https://github.com/SonarSource/sonarqube"
+    },
+    {
+      "id": "trivy",
+      "name": "Trivy",
+      "category": "SCA",
+      "mode": "local",
+      "installCmd": "sudo apt install trivy || docker pull aquasec/trivy",
+      "repoUrl": "https://github.com/aquasecurity/trivy"
+    },
+    {
+      "id": "osv-scanner",
+      "name": "OSV-Scanner",
+      "category": "SCA",
+      "mode": "local",
+      "installCmd": "go install github.com/google/osv-scanner/cmd/osv-scanner@latest",
+      "repoUrl": "https://github.com/google/osv-scanner"
+    },
+    {
+      "id": "retirejs",
+      "name": "Retire.js",
+      "category": "SCA",
+      "mode": "both",
+      "installCmd": "npm install -g retire",
+      "repoUrl": "https://github.com/RetireJS/retire.js"
+    },
+    {
+      "id": "pip-npm-audit",
+      "name": "pip-audit & npm audit",
+      "category": "SCA",
+      "mode": "local",
+      "installCmd": "pip install pip-audit",
+      "repoUrl": "https://github.com/pypa/pip-audit"
+    },
+    {
+      "id": "gitleaks",
+      "name": "Gitleaks",
+      "category": "Secrets",
+      "mode": "local",
+      "installCmd": "docker pull zricethezav/gitleaks:latest",
+      "repoUrl": "https://github.com/gitleaks/gitleaks"
+    },
+    {
+      "id": "trufflehog",
+      "name": "TruffleHog",
+      "category": "Secrets",
+      "mode": "local",
+      "installCmd": "docker pull trufflesecurity/trufflehog:latest",
+      "repoUrl": "https://github.com/trufflesecurity/trufflehog"
+    },
+    {
+      "id": "checkov",
+      "name": "Checkov",
+      "category": "IaC",
+      "mode": "local",
+      "installCmd": "pip install checkov",
+      "repoUrl": "https://github.com/bridgecrewio/checkov"
+    }
+  ]
+}

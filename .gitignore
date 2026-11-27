@@ -1,0 +1,15 @@
+# Portable runtime & sensitive user data (NEVER commit)
+data/
+.venv/
+.node_tools/
+bin/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+
+# OS & Logs
+.DS_Store
+*.log
